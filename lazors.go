@@ -3,7 +3,6 @@ package lazors
 import (
 )
 
-
 //00FFCTTT
 //Where FF is Facing (00-north, 01-East, 10-South, 11-West)
 //C is color (0-Silver, 1-Red)
@@ -44,7 +43,6 @@ const(
 type Board [100]byte
 
 type PathSegment struct{
-	EnterDirection byte
 	ExitDirection byte
 	IsDestroyed bool
 }
@@ -73,17 +71,38 @@ func getPathSegment(cell byte, enterDirection byte) PathSegment{
 	pieceType := pieceType(cell)
 	
 	if(pieceType == Empty){
-		return PathSegment{enterDirection, rotate(enterDirection,2), false}
+		return PathSegment{rotate(enterDirection,2), false}
+	}
+	
+	if(pieceType == Mirror){
+		if(enterDirection == facing(cell)){
+			return PathSegment{rotate(enterDirection,1),false}
+		}
+		if(enterDirection == rotate(facing(cell),1)){
+			return PathSegment{facing(cell), false}
+		}
+		return PathSegment {NoExit, true}
+	}
+	
+	if(pieceType == DoubleMirror){
+		if(enterDirection == facing(cell) || enterDirection == rotate(facing(cell),2)){
+			return PathSegment{rotate(enterDirection,1),false}
+		}
+		return PathSegment{rotate(enterDirection,3),false}
 	}
 	
 	if pieceType == Target{
-		return PathSegment{enterDirection, NoExit, true}
+		return PathSegment{NoExit, true}
 	}
 	
 	if pieceType == Shield{
-		return PathSegment{enterDirection, NoExit, enterDirection != facing(cell)}
+		return PathSegment{NoExit, enterDirection != facing(cell)}
 	}
-	return PathSegment{13,13,false}
+	
+	if pieceType == Lazor{
+		return PathSegment{NoExit, false}
+	}
+	return PathSegment{NoExit, false}
 }
 
 
