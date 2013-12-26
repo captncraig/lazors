@@ -27,6 +27,16 @@ func TestTarget(t *testing.T){
 	}
 }
 
+func TestShield(t *testing.T){
+	for orientation := North; orientation <= West; orientation+=East{
+		c := Shield | orientation
+		for direction := North; direction <=West; direction+= East{
+			x:= getPathSegment(c,direction)
+			checkSegment(direction,NoExit,orientation != direction,x,t,"Shield facing " + strconv.Itoa(int(orientation)))
+		}
+	}
+}
+
 func checkSegment(inDir byte, outDir byte,kill bool, segment PathSegment, t *testing.T, description string){
 	if segment.EnterDirection != inDir{
 		t.Errorf("%v: Expected EnterDirection to be %v, but got %v",description, inDir, segment.EnterDirection)

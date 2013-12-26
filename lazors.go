@@ -53,17 +53,35 @@ func (b Board) GetPath(colorToFire byte) []PathSegment{
 	return nil
 }
 
+func pieceType(cell byte) byte{
+	return cell & 7
+}
+
+func facing(cell byte) byte{
+	return cell & West
+}
+
+func color(cell byte) byte{
+	return cell & Red
+}
+
+func rotate(facingDir byte, steps byte) byte {
+	return facing(facingDir + (East * steps)) 
+}
+
 func getPathSegment(cell byte, enterDirection byte) PathSegment{
-	pieceType := cell & 7
+	pieceType := pieceType(cell)
 	
-	//Empty passthrough
 	if(pieceType == Empty){
-		return PathSegment{enterDirection,(enterDirection + 32) & 48, false}
+		return PathSegment{enterDirection, rotate(enterDirection,2), false}
 	}
 	
-	//Target case:
 	if pieceType == Target{
 		return PathSegment{enterDirection, NoExit, true}
+	}
+	
+	if pieceType == Shield{
+		return PathSegment{enterDirection, NoExit, enterDirection != facing(cell)}
 	}
 	return PathSegment{13,13,false}
 }
