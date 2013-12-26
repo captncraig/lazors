@@ -40,7 +40,7 @@ const(
 	NoExit = 		byte(4 << 4) //Only valid in PathSegments. Don't put this in a cell
 )
 
-type Board [100]byte
+type Board [80]byte
 
 type PathSegment struct{
 	ExitDirection byte
@@ -69,23 +69,23 @@ func rotate(facingDir byte, steps byte) byte {
 
 func getPathSegment(cell byte, enterDirection byte) PathSegment{
 	pieceType := pieceType(cell)
-	
+	facingDir := facing(cell)
 	if(pieceType == Empty){
 		return PathSegment{rotate(enterDirection,2), false}
 	}
 	
 	if(pieceType == Mirror){
-		if(enterDirection == facing(cell)){
+		if(enterDirection == facingDir){
 			return PathSegment{rotate(enterDirection,1),false}
 		}
-		if(enterDirection == rotate(facing(cell),1)){
+		if(enterDirection == rotate(facingDir,1)){
 			return PathSegment{facing(cell), false}
 		}
 		return PathSegment {NoExit, true}
 	}
 	
 	if(pieceType == DoubleMirror){
-		if(enterDirection == facing(cell) || enterDirection == rotate(facing(cell),2)){
+		if(enterDirection == facingDir || enterDirection == rotate(facingDir,2)){
 			return PathSegment{rotate(enterDirection,1),false}
 		}
 		return PathSegment{rotate(enterDirection,3),false}
@@ -96,7 +96,7 @@ func getPathSegment(cell byte, enterDirection byte) PathSegment{
 	}
 	
 	if pieceType == Shield{
-		return PathSegment{NoExit, enterDirection != facing(cell)}
+		return PathSegment{NoExit, enterDirection != facingDir}
 	}
 	
 	if pieceType == Lazor{
