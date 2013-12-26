@@ -6,20 +6,20 @@ import (
 )
 
 func TestEmptySquare(t *testing.T){
-	var c Cell = 0
-	x := c.getPathSegment(0)
+	var c Cell = Empty
+	x := c.getPathSegment(NorthFacing)
 	checkSegment(0,2,false,x,t,"Passthrough N->S")
-	x = c.getPathSegment(1)
+	x = c.getPathSegment(EastFacing)
 	checkSegment(1,3,false,x,t,"Passthrough E->W")
-	x = c.getPathSegment(2)
+	x = c.getPathSegment(SouthFacing)
 	checkSegment(2,0,false,x,t,"Passthrough S->N")
-	x = c.getPathSegment(3)
+	x = c.getPathSegment(WestFacing)
 	checkSegment(3,1,false,x,t,"Passthrough W->E")
 }
 
 func TestTarget(t *testing.T){
 	for orientation := Cell(0); orientation <= 3; orientation++{
-		var c Cell = 1 | (orientation << 4)
+		var c Cell = Target | (orientation << 4)
 		for direction := byte(0); direction <=3; direction++{
 			x:=c.getPathSegment(direction)
 			checkSegment(direction,4,true,x,t,"Target facing " + strconv.Itoa(int(orientation)))
