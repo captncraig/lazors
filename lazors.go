@@ -4,9 +4,8 @@ import (
 )
 
 
-
-//OOCTTT
-//Where OO is orientaion (00-north, 01-East, 10-South, 11-West)
+//00FFCTTT
+//Where FF is Facing (00-north, 01-East, 10-South, 11-West)
 //C is color (0-Silver, 1-Red)
 //TTT is Type:
 //000 - Empty
@@ -22,36 +21,27 @@ import (
 //					00/10:	X			01/11:	  X
 //							 X					 X
 //							  X					X
-type Cell byte
 
 //Constants to define Cells. eg. Mirror | Silver | South
 const(
-	Empty = Cell(0)
-	Lazor = Cell(1)
-	Target = Cell(2)
-	Shield = Cell(3)
-	Mirror = Cell(4)
-	DoubleMirror = Cell(5)
+	Empty = 		byte(0)
+	Lazor = 		byte(1)
+	Target = 		byte(2)
+	Shield = 		byte(3)
+	Mirror = 		byte(4)
+	DoubleMirror = 	byte(5)
 	
-	Silver = Cell(0 << 3)
-	Red = Cell(1 << 3)
+	Silver = 		byte(0 << 3)
+	Red = 			byte(1 << 3)
 	
-	North = Cell(0 << 4)
-	East = Cell(1 << 4)
-	South = Cell(2 <<4)
-	West = Cell(3 << 4)
+	North = 		byte(0 << 4)
+	East = 			byte(1 << 4)
+	South = 		byte(2 << 4)
+	West = 			byte(3 << 4)
+	NoExit = 		byte(4 << 4) //Only valid in PathSegments. Don't put this in a cell
 )
 
-//Constants for standalone facings (once extracted from cell)
-const(
-	NorthFacing = byte(0)
-	EastFacing = byte(1)
-	SouthFacing = byte(2)
-	WestFacing = byte(3)
-	NoExit = byte(4)
-)
-
-type Board [100]Cell
+type Board [100]byte
 
 type PathSegment struct{
 	EnterDirection byte
@@ -63,17 +53,19 @@ func (b Board) GetPath(colorToFire byte) []PathSegment{
 	return nil
 }
 
-func (c Cell) getPathSegment(enterDirection byte) PathSegment{
-	pieceType := Cell(c & 7)
+func getPathSegment(cell byte, enterDirection byte) PathSegment{
+	pieceType := cell & 7
+	
 	//Empty passthrough
 	if(pieceType == Empty){
-		return PathSegment{enterDirection,(enterDirection + 2) % 4, false}
+		return PathSegment{enterDirection,(enterDirection + 32) & 48, false}
 	}
+	
 	//Target case:
 	if pieceType == Target{
 		return PathSegment{enterDirection, NoExit, true}
 	}
-	return PathSegment{}
+	return PathSegment{13,13,false}
 }
 
 
