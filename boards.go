@@ -2,6 +2,7 @@ package lazors
 
 import(
 	"fmt"
+	"github.com/daviddengcn/go-colortext"
 )
 
 type Placement struct{
@@ -31,19 +32,62 @@ func ClassicSetup() Board{
 	return b
 }
 
-func addPlacementsToBoard(p [13]Placement, color byte, rotate bool, b *Board){
+func addPlacementsToBoard(p [13]Placement, color byte, shouldRotate bool, b *Board){
 	for i := 0; i < len(p); i++ {
 		cell := p[i];
 		//Horrible hack to simulate ternary operator
-		location := map[bool]byte{true: cell.Location, false: 79 - cell.Location}[rotate]
-		b[location] = color | cell.Piece | cell.Facing
+		location := map[bool]byte{false: cell.Location, true: 79 - cell.Location}[shouldRotate]
+		facing := map[bool]byte{false: cell.Facing, true: rotate(cell.Facing,2)}[shouldRotate]
+		b[location] = color | cell.Piece | facing
 	}
 }
 
 func PrettyPrint(b *Board){
 	for i := 0; i < len(b); i++ {
 		if(i%10 == 0){fmt.Println()}
-		fmt.Printf("%3d",b[i])
-		
+		print(b[i])
 	}
 }
+
+func print(c byte){
+	colorVal := color(c)
+	ct.ChangeColor(ct.White,false,ct.Black,false)
+	if colorVal == Red{
+		ct.ChangeColor(ct.Red,false,ct.Black,false)
+	}
+	if colorVal == Silver && c != 0{
+		ct.ChangeColor(ct.Yellow,false,ct.Black,false)
+	}
+	out := ""
+	switch pieceType(c){
+		case Empty:
+			out += "0"
+		case Mirror:
+			out += "M"
+		case Target:
+			out += "T"
+		case Lazor:
+			out += "L"
+		case Shield:
+			out += "S"
+		case DoubleMirror:
+			out += "D"
+		default:
+			out += "?"
+	}
+	if(c != 0){
+		switch facing(c){
+			case North:
+				out += "^"
+			case East:
+				out += ">"
+			case South: 
+				out += "v"
+			case West:
+				out += "<"
+		}
+	}else{out+=" "}
+	fmt.Print(out)
+}
+	
+
