@@ -1,6 +1,8 @@
 package lazors
 
 import (
+	"container/list"
+	"fmt"
 )
 
 //00FFCTTT
@@ -43,8 +45,11 @@ const(
 type Board [80]byte
 
 type PathSegment struct{
+	EnterDirection byte
 	ExitDirection byte
 	IsDestroyed bool
+	Cell byte
+	ExitsBoard bool
 }
 
 func (b Board) GetPath(colorToFire byte) []PathSegment{
@@ -67,42 +72,73 @@ func rotate(facingDir byte, steps byte) byte {
 	return facing(facingDir + (East * steps)) 
 }
 
+func nextCell(loc byte, direction byte) byte{
+	if(direction == North){
+		if(loc >= 10){return loc - 10}
+		return 255
+	}
+	if(direction == South){
+		if(loc <= 69){return loc + 10}
+		return 255
+	}
+	return 255
+}
+
+func GetFullPath(b *Board, startLoc byte, startFacing byte) *list.List{
+	l := list.New()
+	l.PushBack(PathSegment{NoExit,startFacing,false,startLoc,false})
+	fmt.Printf("%v\n",l.Back().Value.(PathSegment))
+
+	for i := 0; i < 4; i++  {
+		last:= l.Back().Value.(PathSegment)
+		enterDirection := rotate(last.ExitDirection,2)
+		cell := nextCell(last.Cell,last.ExitDirection)
+		fmt.Printf("%v\n",enterDirection)
+		fmt.Printf("%v\n",cell)
+		seg := getPathSegment(b[cell],enterDirection)
+		seg.Cell = cell
+		fmt.Printf("%v\n",seg)
+		l.PushBack(seg)
+	}
+	return l
+}
+
 func getPathSegment(cell byte, enterDirection byte) PathSegment{
 	pieceType := pieceType(cell)
 	facingDir := facing(cell)
 	if(pieceType == Empty){
-		return PathSegment{rotate(enterDirection,2), false}
+		return PathSegment{ExitDirection:rotate(enterDirection,2)}
 	}
 	
 	if(pieceType == Mirror){
 		if(enterDirection == facingDir){
-			return PathSegment{rotate(enterDirection,1),false}
+			return PathSegment{ExitDirection:rotate(enterDirection,1)}
 		}
 		if(enterDirection == rotate(facingDir,1)){
-			return PathSegment{facing(cell), false}
+			return PathSegment{ExitDirection:facing(cell)}
 		}
-		return PathSegment {NoExit, true}
+		return PathSegment {ExitDirection:NoExit, IsDestroyed:true}
 	}
 	
 	if(pieceType == DoubleMirror){
 		if(enterDirection == facingDir || enterDirection == rotate(facingDir,2)){
-			return PathSegment{rotate(enterDirection,1),false}
+			return PathSegment{ExitDirection:rotate(enterDirection,1)}
 		}
-		return PathSegment{rotate(enterDirection,3),false}
+		return PathSegment{ExitDirection:rotate(enterDirection,3)}
 	}
 	
 	if pieceType == Target{
-		return PathSegment{NoExit, true}
+		return PathSegment{ExitDirection:NoExit,IsDestroyed: true}
 	}
 	
 	if pieceType == Shield{
-		return PathSegment{NoExit, enterDirection != facingDir}
+		return PathSegment{ExitDirection:NoExit, IsDestroyed: enterDirection != facingDir}
 	}
 	
 	if pieceType == Lazor{
-		return PathSegment{NoExit, false}
+		return PathSegment{ExitDirection:NoExit}
 	}
-	return PathSegment{NoExit, false}
+	return PathSegment{ExitDirection:NoExit}
 }
 
 

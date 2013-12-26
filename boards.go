@@ -51,7 +51,7 @@ func PrettyPrint(b *Board){
 
 func print(c byte){
 	colorVal := color(c)
-	ct.ChangeColor(ct.White,false,ct.Black,false)
+	
 	if colorVal == Red{
 		ct.ChangeColor(ct.Red,false,ct.Black,false)
 	}
@@ -88,6 +88,7 @@ func print(c byte){
 		}
 	}else{out+=" "}
 	fmt.Print(out)
+	ct.ChangeColor(ct.White,false,ct.Black,false)
 }
 	
 
