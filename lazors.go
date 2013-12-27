@@ -2,7 +2,7 @@ package lazors
 
 import (
 	"container/list"
-	"fmt"
+
 )
 
 //00FFCTTT
@@ -81,24 +81,34 @@ func nextCell(loc byte, direction byte) byte{
 		if(loc <= 69){return loc + 10}
 		return 255
 	}
+	if(direction == East){
+		if(loc % 10 < 9){return loc + 1}
+		return 255
+	}
+	if(direction == West){
+		if(loc % 10 > 0){return loc - 1}
+		return 255
+	}
 	return 255
 }
 
 func GetFullPath(b *Board, startLoc byte, startFacing byte) *list.List{
 	l := list.New()
-	l.PushBack(PathSegment{NoExit,startFacing,false,startLoc,false})
-	fmt.Printf("%v\n",l.Back().Value.(PathSegment))
-
-	for i := 0; i < 4; i++  {
-		last:= l.Back().Value.(PathSegment)
+	l.PushBack(&PathSegment{NoExit,startFacing,false,startLoc,false})
+	for{
+		last:= l.Back().Value.(*PathSegment)
 		enterDirection := rotate(last.ExitDirection,2)
 		cell := nextCell(last.Cell,last.ExitDirection)
-		fmt.Printf("%v\n",enterDirection)
-		fmt.Printf("%v\n",cell)
+		if cell == 255{
+			last.ExitsBoard = true
+			break
+		}
 		seg := getPathSegment(b[cell],enterDirection)
 		seg.Cell = cell
-		fmt.Printf("%v\n",seg)
-		l.PushBack(seg)
+		l.PushBack(&seg)
+		if(seg.IsDestroyed){
+			break
+		}
 	}
 	return l
 }
