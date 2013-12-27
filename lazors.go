@@ -52,10 +52,6 @@ type PathSegment struct{
 	ExitsBoard bool
 }
 
-func (b Board) GetPath(colorToFire byte) []PathSegment{
-	return nil
-}
-
 func pieceType(cell byte) byte{
 	return cell & 7
 }
@@ -92,7 +88,7 @@ func nextCell(loc byte, direction byte) byte{
 	return 255
 }
 
-func GetFullPath(b *Board, startLoc byte, startFacing byte) *list.List{
+func (b *Board) GetFullPath( startLoc byte, startFacing byte) *list.List{
 	l := list.New()
 	l.PushBack(&PathSegment{NoExit,startFacing,false,startLoc,false})
 	for{

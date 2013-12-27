@@ -6,7 +6,7 @@ import (
 
 func TestDefaultPath(t *testing.T){
 	b := ClassicSetup()
-	x := GetFullPath(&b, 0, South)
+	x := b.GetFullPath(0, South)
 	if(x.Len() != 12){
 		t.Errorf("Was expecting path of length 12, but got %v",x.Len()); 
 		return;
@@ -26,7 +26,7 @@ func TestKillPharoh(t *testing.T){
 	b := ClassicSetup()
 	b[32] = 0
 	b[44] = 0
-	x := GetFullPath(&b, 0, South)
+	x := b.GetFullPath(0, South)
 	if(x.Len() != 12){
 		t.Errorf("Was expecting path of length 12, but got %v",x.Len()); 
 		return;
@@ -49,7 +49,7 @@ func TestKillPharoh(t *testing.T){
 func TestKillPyramid(t *testing.T){
 	b := ClassicSetup()
 	b[32] = Silver | Mirror | North
-	x := GetFullPath(&b, 0, South)
+	x := b.GetFullPath(0, South)
 	if(x.Len() != 6){
 		t.Errorf("Was expecting path of length 6, but got %v",x.Len()); 
 		return;
