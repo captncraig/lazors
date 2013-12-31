@@ -101,6 +101,7 @@ func (b *Board) GetFullPath( startLoc byte, startFacing byte) *list.List{
 		}
 		seg := getPathSegment(b[cell],enterDirection)
 		seg.Cell = cell
+		seg.EnterDirection = enterDirection
 		l.PushBack(&seg)
 		if(seg.IsDestroyed){
 			break

@@ -2,7 +2,6 @@ package lazors
 
 import(
 	"fmt"
-	"github.com/daviddengcn/go-colortext"
 )
 
 type Placement struct{
@@ -40,55 +39,6 @@ func addPlacementsToBoard(p [13]Placement, color byte, shouldRotate bool, b *Boa
 		facing := map[bool]byte{false: cell.Facing, true: rotate(cell.Facing,2)}[shouldRotate]
 		b[location] = color | cell.Piece | facing
 	}
-}
-
-func PrettyPrint(b *Board){
-	for i := 0; i < len(b); i++ {
-		if(i%10 == 0){fmt.Println()}
-		print(b[i])
-	}
-}
-
-func print(c byte){
-	colorVal := color(c)
-	
-	if colorVal == Red{
-		ct.ChangeColor(ct.Red,false,ct.Black,false)
-	}
-	if colorVal == Silver && c != 0{
-		ct.ChangeColor(ct.Yellow,false,ct.Black,false)
-	}
-	out := ""
-	switch pieceType(c){
-		case Empty:
-			out += "0"
-		case Mirror:
-			out += "M"
-		case Target:
-			out += "T"
-		case Lazor:
-			out += "L"
-		case Shield:
-			out += "S"
-		case DoubleMirror:
-			out += "D"
-		default:
-			out += "?"
-	}
-	if(c != 0){
-		switch facing(c){
-			case North:
-				out += "^"
-			case East:
-				out += ">"
-			case South: 
-				out += "v"
-			case West:
-				out += "<"
-		}
-	}else{out+=" "}
-	fmt.Print(out)
-	ct.ChangeColor(ct.White,false,ct.Black,false)
 }
 	
 
