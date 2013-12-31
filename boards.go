@@ -1,9 +1,5 @@
 package lazors
 
-import(
-	"fmt"
-)
-
 type Placement struct{
 	Location byte
 	Piece byte
